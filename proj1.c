@@ -8,19 +8,21 @@
 #include <string.h>
 #define STRLENGTH 101
 
-int searchForNumber(char firstChar);
+int copyArgString(char *argv[], int *countsearchedString, char *searchedString);
 
-int searchForMatch(char *searchedString, int countSearchedString, char entries[STRLENGTH][STRLENGTH], int entryStringCount);
+int searchForNumber(char *firstChar);
 
-int printContact (int entryStringCount, char entries[STRLENGTH][STRLENGTH]);
+int scanAndPrintContacts(int *correctInput, char *searchedString, int *countsearchedString);
+
+int searchForMatch(char *searchedString, int *countSearchedString, char entries[STRLENGTH][STRLENGTH], int *entryStringCount);
+
+int printContact (int *entryStringCount, char entries[STRLENGTH][STRLENGTH]);
 
 int main(int argc, char *argv[]){   
-    char entries[STRLENGTH][STRLENGTH];
     char searchedString[STRLENGTH];
     int countsearchedString = 0;
     int countMatchedContacts = 0;
     int correctInput = 0;
-    int checkInput = 0;
     //Checks for correct input
     if (argc == 1){
         correctInput = 0; //no valid arguments, print everything
@@ -33,21 +35,54 @@ int main(int argc, char *argv[]){
     }
     //copy argument for search
     if (correctInput == 1){
-        for(int i = 0; argv[1][i] != '\0';i++){
-            checkInput = searchForNumber(argv[1][i]);
-            // if argument is valid
-            if (checkInput == 1 && countsearchedString < STRLENGTH){
-                searchedString[i] = argv[1][i];
-                countsearchedString++;
-            }
-            // if argument is invalid, break
-            if (checkInput == 0 || countsearchedString >= STRLENGTH) {
-                correctInput = -1;
-            }
+        correctInput = copyArgString(argv, &countsearchedString, searchedString);
+    }
+    //call for main function
+    countMatchedContacts = scanAndPrintContacts(&correctInput, searchedString, &countsearchedString);
+    
+    //bad states
+    if(countMatchedContacts == 0 && correctInput != -1){
+        fprintf(stdout, "Not found\n");     
+    }
+    if(correctInput == -1){
+        fprintf(stderr, "Wrong Input\n");
+    }
+    return 0;
+}
+int copyArgString(char *argv[], int *countsearchedString, char *searchedString){
+    //check if input argumment is correct, if yes, copy it to string
+    //argv = input argument
+    //countsearchedString = number of chars in searches string
+    //searchedString = string to store input argument
+    //returns 1 when argument is valid and its stored into searchedString
+    //returns -1 when argument is invalid
+
+    for(int i = 0; argv[1][i] != '\0';i++){
+        int checkInput = searchForNumber(&argv[1][i]);
+        // if argument is valid
+        if (checkInput == 1 && *countsearchedString < STRLENGTH){
+            searchedString[i] = argv[1][i];
+            *countsearchedString += 1;
+        }
+        // if argument is invalid, break
+        if (checkInput == 0 || *countsearchedString >= STRLENGTH) {
+            return -1;
         }
     }
+    return 1;
+}
+
+int scanAndPrintContacts(int *correctInput, char *searchedString, int *countsearchedString){
+    //scan contacts from stdin, search for matching contacts and print them
+    //correctInput = states of correct input, if == 1, function work normaly, if == 0, function will print everything from stdin formated
+    //searchedString = string which we want to compare
+    //countsearchedString = count of chars in searchedString
+    //returns number of matched and printed contacts
+    
+    char entries[STRLENGTH][STRLENGTH];
     int checkForEOF = 0;
-    while(checkForEOF != 1 && correctInput != -1){
+    int countMatchedContacts = 0;
+    while(checkForEOF != 1 && *correctInput != -1){
         int contactWasFound = 0;
         int entryStringCount = 0;
         //scan contact to entry
@@ -60,30 +95,27 @@ int main(int argc, char *argv[]){
             }
         }
         //if there is correct input 
-        if (correctInput != -1 && checkForEOF != 1){
+        if (*correctInput != -1 && checkForEOF != 1){
             //search for match
-            if (correctInput == 1){
-                contactWasFound = searchForMatch(searchedString, countsearchedString, entries, entryStringCount);
+            if (*correctInput == 1){
+                contactWasFound = searchForMatch(searchedString, countsearchedString, entries, &entryStringCount);
             }
             //print matched contact
-            if (contactWasFound == 1 || correctInput == 0){
-                printContact(entryStringCount, entries);
+            if (contactWasFound == 1 || *correctInput == 0){
+                printContact(&entryStringCount, entries);
                 countMatchedContacts++;
             }
         }
     }
-    //bad states
-    if(countMatchedContacts == 0 && correctInput != -1){
-        fprintf(stdout, "Not found\n");     
-    }
-    if(correctInput == -1){
-        fprintf(stderr, "Wrong Input\n");
-    }
-    return 0;
+    return countMatchedContacts;
 }
 
-int searchForNumber(char firstChar){
-    if (firstChar >= '0' && firstChar <= '9'){
+int searchForNumber(char *firstChar){
+    //search for number
+    //firstChar = char that we want to check
+    //returns 1 if its number
+    //returns 0 if its char
+    if (*firstChar >= '0' && *firstChar <= '9'){
         return 1; //number
     }
     else {
@@ -91,7 +123,15 @@ int searchForNumber(char firstChar){
     }
 }
 
-int searchForMatch(char *searchedString, int countSearchedString, char entries[STRLENGTH][STRLENGTH], int entryStringCount){
+int searchForMatch(char *searchedString, int *countSearchedString, char entries[STRLENGTH][STRLENGTH], int *entryStringCount){
+    //check if contact is matching input parameter
+    //searchedString = input parameter
+    //countSearchedString = count of chars in searchedString
+    //entries = array of entries from stdin
+    //entryStringCount = count of entries in entries
+    // returns 1 when match was found
+    // returns -1 when no match was found
+    
     const int countLettersByNumbers = 4;
     char lettersByNumbers[10][4] = {
         {'+'}, //0
@@ -107,11 +147,11 @@ int searchForMatch(char *searchedString, int countSearchedString, char entries[S
     };
     int searchedNumber = 0;
     int isNumber = 0;
-    for (int entryIndex = 0; entryIndex < entryStringCount; entryIndex++){
+    for (int entryIndex = 0; entryIndex < *entryStringCount; entryIndex++){
         int matchCount = 0;
         int strLength = strlen(entries[entryIndex]);
         for (int i = 0; i < strLength; i++){
-            isNumber = searchForNumber(entries[entryIndex][i]);
+            isNumber = searchForNumber(&entries[entryIndex][i]);
             //if current char is character
             if (isNumber == 0){
                 //find match for every char represented by searched number
@@ -131,7 +171,7 @@ int searchForMatch(char *searchedString, int countSearchedString, char entries[S
                 }
             }
              //if there is valid match
-            if (matchCount == countSearchedString){
+            if (matchCount == *countSearchedString){
             return 1;
             }
         }
@@ -139,8 +179,12 @@ int searchForMatch(char *searchedString, int countSearchedString, char entries[S
     return -1;
 }
 
-int printContact (int entryStringCount, char entries[STRLENGTH][STRLENGTH]){
-    for(int i = 0; i < entryStringCount; i++){
+int printContact (int *entryStringCount, char entries[STRLENGTH][STRLENGTH]){
+    //prints contact
+    //entries = array of entries from stdin
+    //entryStringCount = count of entries in entries
+    //returns 0 when its done
+    for(int i = 0; i < *entryStringCount; i++){
         int entryLength = strlen(entries[i]);
         //delete end of line chars
         for(int j = 0; j <= entryLength; j++){
