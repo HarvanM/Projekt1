@@ -1,5 +1,6 @@
-//    Mario Harvan
-//    xharva03
+// IZP Projekt 1
+// Mario Harvan
+// xharva03
 
 #include <stdio.h>
 #include <stdlib.h>
