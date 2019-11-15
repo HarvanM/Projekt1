@@ -14,9 +14,9 @@ int searchForNumber(char firstChar);
 
 int scanAndPrintContacts(int correctInput, char *searchedString, int *countsearchedString);
 
-int searchForMatch(char *searchedString, int *countSearchedString, char entries[STRLENGTH][STRLENGTH], int entryStringCount);
+int searchForMatch(char *searchedString, int *countSearchedString, char (*entries)[STRLENGTH], int entryStringCount);
 
-int printContact (int entryStringCount, char entries[STRLENGTH][STRLENGTH]);
+int printContact (int entryStringCount, char (*entries)[STRLENGTH]);
 
 int main(int argc, char *argv[]){
     char searchedString[STRLENGTH];
@@ -56,7 +56,6 @@ int copyArgString(char *argv[], int *countsearchedString, char *searchedString){
     //searchedString = string to store input argument
     //returns 1 when argument is valid and its stored into searchedString
     //returns -1 when argument is invalid
-
     for(int i = 0; argv[1][i] != '\0';i++){
         int checkInput = searchForNumber(argv[1][i]);
         // if argument is valid
@@ -78,7 +77,6 @@ int scanAndPrintContacts(int correctInput, char *searchedString, int *countsearc
     //searchedString = string which we want to compare
     //countsearchedString = count of chars in searchedString
     //returns number of matched and printed contacts
-
     char entries[STRLENGTH][STRLENGTH];
     int checkForEOF = 0;
     int countMatchedContacts = 0;
@@ -123,7 +121,7 @@ int searchForNumber(char firstChar){
     }
 }
 
-int searchForMatch(char *searchedString, int *countSearchedString, char entries[STRLENGTH][STRLENGTH], int entryStringCount){
+int searchForMatch(char *searchedString, int *countSearchedString, char (*entries)[STRLENGTH], int entryStringCount){
     //check if contact is matching input parameter
     //searchedString = input parameter
     //countSearchedString = count of chars in searchedString
@@ -181,7 +179,7 @@ int searchForMatch(char *searchedString, int *countSearchedString, char entries[
     return -1;
 }
 
-int printContact (int entryStringCount, char entries[STRLENGTH][STRLENGTH]){
+int printContact (int entryStringCount, char (*entries)[STRLENGTH]){
     //prints contact
     //entries = array of entries from stdin
     //entryStringCount = count of entries in entries
