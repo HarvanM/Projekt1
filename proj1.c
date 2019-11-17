@@ -1,6 +1,9 @@
-// IZP Projekt 1
-// Mario Harvan
-// xharva03
+/**
+ * @name Projekt 1 - Práce s textem
+ * @author Mário Harvan 
+ * login: xharva03
+ * version: V1.0
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -131,15 +134,15 @@ int searchForMatch(char *searchedString, int *countSearchedString, char (*entrie
     // returns -1 when no match was found
     const int countLettersByNumbers = 4;
     char lettersByNumbers[10][4] = {
-        {'+'}, //0
-        {'\0'}, //1
-        {'a','b','c'}, //2
-        {'d','e','f'}, //3
-        {'g','h','i'}, //4
-        {'j','k','l'}, //5
-        {'m','n','o'}, //6
+        {'+','\0','\0','\0'}, //0
+        {'\0','\0','\0','\0'}, //1
+        {'a','b','c','\0'}, //2
+        {'d','e','f','\0'}, //3
+        {'g','h','i','\0'}, //4
+        {'j','k','l','\0'}, //5
+        {'m','n','o','\0'}, //6
         {'p','q','r','s'}, //7
-        {'t','u','v'}, //8
+        {'t','u','v','\0'}, //8
         {'w', 'x', 'y', 'z'} //9
     };
     int searchedNumber = 0;
